@@ -1,13 +1,11 @@
-public class automationUserEmailService implements Messaging.InboundEmailHandler {
-
+public with sharing class AutomationEmailService implements Messaging.InboundEmailHandler {
     public Messaging.InboundEmailResult handleInboundEmail(Messaging.InboundEmail email, Messaging.InboundEnvelope envelope) {
 
         Messaging.InboundEmailResult result = new Messaging.InboundEmailResult();
 
         try {
             // Log the incoming email details using Nebula Logger
-            System.debug(email.subject);
-            Logger.info('Inbound Email Received');
+            Logger.error('Inbound Email Received');
             Logger.setField(LogEntryEvent__e.Email_Subject__c, email.subject);
             Logger.setField(LogEntryEvent__e.Email_From__c, email.fromAddress);
             Logger.setField(LogEntryEvent__e.Email_Body__c, email.plainTextBody);

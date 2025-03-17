@@ -22,3 +22,5 @@ The `sfdx-project.json` file contains useful configuration information for your 
 
 - [Nebula Logger Article from Salesforce Ben](https://www.salesforceben.com/easily-debug-salesforce-using-nebula-logger/)
     - [Package Links](https://github.com/jongpie/NebulaLogger/)
+- [Connecting with ChatGPT from Salesforce Ben](https://www.salesforceben.com/integrating-openais-chatgpt-with-the-salesforce-appexchange/)
+- [Gemini's Pricing Tiers](https://ai.google.dev/gemini-api/docs/pricing)
