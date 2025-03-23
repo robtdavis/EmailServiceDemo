@@ -24,3 +24,6 @@ The `sfdx-project.json` file contains useful configuration information for your 
     - [Package Links](https://github.com/jongpie/NebulaLogger/)
 - [Connecting with ChatGPT from Salesforce Ben](https://www.salesforceben.com/integrating-openais-chatgpt-with-the-salesforce-appexchange/)
 - [Gemini's Pricing Tiers](https://ai.google.dev/gemini-api/docs/pricing)
+
+
+- [Bob Buzzard Blog about Keeping Your Agentforce DEv Org Alive and Kicking](https://bobbuzzard.blogspot.com/2025/03/keep-your-agentforce-dev-org-alive-and.html)
