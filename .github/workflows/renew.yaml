@@ -23,7 +23,7 @@ jobs:
         run: |
             echo ${{ secrets.EMAILSERVICEDEMO }} > ./EMAILSERVICEDEMO.txt
             ls -al ./EMAILSERVICEDEMO.txt
-            sf org login sfdx-url -f ./EMAILSERVICEDEMO.txt -a AFDevOrgRenew -d
+            sf org login sfdx-url -f ./EMAILSERVICEDEMO.txt -a EmailServiceDemoOrg -d
       - name: 'Query data'
         run: |
             sf data query --query "select name from organization" -o EmailServiceDemoOrg
