@@ -1,10 +1,10 @@
 public class EmailClassifier {
-    public static ChatGPTIntegration__mdt config; // Assuming you have a custom metadata type for Gemini
+    public static AI_Integration_Config__mdt config; // Assuming you have a custom metadata type for Gemini
 
     public static String classifyEmail(String subject, String body) {
         HttpRequest req = new HttpRequest();
 
-        config = ChatGPTIntegration__mdt.getInstance('EmailService'); // Replace 'EmailService' with your instance name
+        config = AI_Integration_Config__mdt.getInstance('EmailService'); // Replace 'EmailService' with your instance name
 
         req.setEndpoint(config.Endpoint__c); // Use the endpoint from your custom metadata
         req.setMethod('POST');

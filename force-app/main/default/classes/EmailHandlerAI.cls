@@ -17,9 +17,6 @@ public class EmailHandlerAI implements Messaging.InboundEmailHandler {
         }
         else if(emailType == 'Request for More Information'){
             SalesforceRecordCreator.createCase(email, 'Request for More Information');
-        } else if(emailType == 'Order Status'){
-            SalesforceRecordCreator.createCase(email, 'Order Status');
-        }
         else{
             SalesforceRecordCreator.createCase(email, 'Unable to Determine Email Type');
         }
