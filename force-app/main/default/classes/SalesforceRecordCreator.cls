@@ -2,15 +2,25 @@
 public class SalesforceRecordCreator {
 
     public static void createCase(Messaging.InboundEmail email, String type){
+        Contact cont = [
+            SELECT Id, AccountId 
+            FROM Contact 
+            WHERE Email = :email.fromAddress 
+            LIMIT 1
+        ];
+
         Case c = new Case();
         c.Subject = (type == 'Unable to Determine Email Type' ? 'Unable to Determine Email Type: ' : '') + Type+' '+email.subject;
         c.Description = email.plainTextBody;
+        c.ContactId = cont.Id;
+        c.AccountId = cont.AccountId;
         c.Origin = 'Email';
         insert c;
 
         attachEmailAndFiles(c.Id, email);
     }
 
+    // To Do what if there is not record found?
     public static void createOpportunity(Messaging.InboundEmail email){
         Contact con = [SELECT Id, AccountId FROM Contact WHERE Email = :email.fromAddress LIMIT 1];
 
@@ -27,25 +37,34 @@ public class SalesforceRecordCreator {
     }
 
     private static void attachEmailAndFiles(Id parentId, Messaging.InboundEmail email){
-        EmailMessage emailMsg = new EmailMessage(
-            ParentId = parentId,
-            FromAddress = email.fromAddress,
-            Incoming = true,
-            Subject = email.subject,
-            TextBody = email.plainTextBody
-        );
-        insert emailMsg;
+           // Determine the object type from the ID prefix
+    String sobjectType = parentId.getSObjectType().getDescribe().getName();
     
-        List<ContentVersion> files = new List<ContentVersion>();
-        if (email.binaryAttachments != null && !email.binaryAttachments.isEmpty()) { // Check for attachments
-            for(Messaging.InboundEmail.BinaryAttachment att : email.binaryAttachments){
-                files.add(new ContentVersion(
-                    Title = att.fileName,
-                    PathOnClient = att.fileName,
-                    VersionData = att.body
-                ));
-            }
-            insert files;
+    EmailMessage emailMsg = new EmailMessage();
+    emailMsg.FromAddress = email.fromAddress;
+    emailMsg.Incoming = true;
+    emailMsg.Subject = email.subject;
+    emailMsg.TextBody = email.plainTextBody;
+    
+    // Handle different parent object types appropriately
+    if (sobjectType == 'Case') {
+        emailMsg.ParentId = parentId;
+    } else if (sobjectType == 'Opportunity') {
+        // For Opportunity, we need to relate via a different field or create a Task instead
+        // Option 1: Create a Task with WhatId as the Opportunity
+        Task emailTask = new Task(
+            Subject = 'Email: ' + email.subject,
+            Description = email.plainTextBody,
+            WhatId = parentId,
+            Status = 'Completed',
+            Priority = 'Normal',
+            ActivityDate = Date.today()
+        );
+        insert emailTask;
+        
+        // If you still want to store the EmailMessage, you may need to create a Case
+        // to link it to, or store it differently depending on your requirements
+        return; // Skip EmailMessage creation for Opportunity
         }
     }
 
@@ -55,7 +74,7 @@ public class SalesforceRecordCreator {
         if(matcher.find()){
             String orderNumber = matcher.group(1);
             Order order = [SELECT Id FROM Order WHERE OrderNumber = :orderNumber LIMIT 1];
-            opp.Order = order.Id;
+            // opp.Order = order.Id;
             update opp;
         }
     }

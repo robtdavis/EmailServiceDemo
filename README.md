@@ -27,3 +27,6 @@ The `sfdx-project.json` file contains useful configuration information for your 
 
 
 - [Bob Buzzard Blog about Keeping Your Agentforce DEv Org Alive and Kicking](https://bobbuzzard.blogspot.com/2025/03/keep-your-agentforce-dev-org-alive-and.html)
+
+- Flow that will cause Error is : [Generate Contact Error](https://orgfarm-6e403d0beb-dev-ed.develop.lightning.force.com/builder_platform_interaction/flowBuilder.app?flowDefId=300gL000000s2Pq&retUrl=/lightning/r/FlowRecord/2aFgL000000OsiPUAS/view)
+  - Create a new contact that starts with a J and attempts to insert long screen and will generate an error that can then be used to send to the logging Email to simulate forwarding by Outlook.

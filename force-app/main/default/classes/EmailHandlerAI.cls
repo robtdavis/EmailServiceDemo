@@ -7,18 +7,18 @@ public class EmailHandlerAI implements Messaging.InboundEmailHandler {
         String emailType = EmailClassifier.classifyEmail(email.subject, email.plainTextBody);
         System.Debug('emailType = ' + emailType);
         if(emailType == 'Product Inquiry'){
-            SalesforceRecordCreator.createCase(email, 'Product Inquiry');
+            SalesforceRecordCreator.createCase(email, 'Product Inquiry:');
         }
         else if(emailType == 'Sales Order'){
             SalesforceRecordCreator.createOpportunity(email);
         }
         else if(emailType == 'Warranty'){
-            SalesforceRecordCreator.createCase(email, 'Warranty');
+            SalesforceRecordCreator.createCase(email, 'Warranty:');
         }
         else if(emailType == 'Request for More Information'){
-            SalesforceRecordCreator.createCase(email, 'Request for More Information');
-        else{
-            SalesforceRecordCreator.createCase(email, 'Unable to Determine Email Type');
+            SalesforceRecordCreator.createCase(email, 'Request for More Information:');
+        } else{
+            SalesforceRecordCreator.createCase(email, 'Unable to Determine Email Type:');
         }
         
         result.success = true;
