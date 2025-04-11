@@ -4,7 +4,7 @@
     <protected>false</protected>
     <values>
         <field>APIKey__c</field>
-        <value xsi:type="xsd:string">AIzaSyD-WtIzh_Nm39A8upNEvqSbzyCiCkNe2RA</value>
+        <value xsi:type="xsd:string">AIzA</value>
     </values>
     <values>
         <field>Command__c</field>
