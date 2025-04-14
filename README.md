@@ -30,3 +30,68 @@ The `sfdx-project.json` file contains useful configuration information for your 
 
 - Flow that will cause Error is : [Generate Contact Error](https://orgfarm-6e403d0beb-dev-ed.develop.lightning.force.com/builder_platform_interaction/flowBuilder.app?flowDefId=300gL000000s2Pq&retUrl=/lightning/r/FlowRecord/2aFgL000000OsiPUAS/view)
   - Create a new contact that starts with a J and attempts to insert long screen and will generate an error that can then be used to send to the logging Email to simulate forwarding by Outlook.
+
+
+Inbound Email Service:
+
+- Product Inquiry:
+   Subject: Question about the ZX3000 Product Line
+
+Body:
+Hello,
+
+I’m interested in learning more about the ZX3000 model—specifically the available features and pricing tiers. Could you please send over a product brochure or spec sheet?
+
+Thanks,  
+Taylor Morgan
+-----------------------------------------------------------------------------------------------------------------------------------------
+- Sales Order:
+   Subject: New Sales Order for 15 Units of XYZ Toolkits
+
+Body:
+Hi,
+
+We’d like to place an order for 15 units of the XYZ Toolkit, model 456T. Please let us know the next steps for invoicing and delivery.  
+PO# 8723-A
+
+Regards,  
+Jordan Lee
+
+--------------------------------------------------------------------------------------------------------------------------------------------
+- Warranty:
+Subject: Warranty Claim for Model QRT-100
+
+Body:
+Hello,
+
+I’m submitting a warranty request for the QRT-100 device purchased last September. It stopped powering on last week.  
+The serial number is SN-88217, and I have attached a copy of the purchase invoice.
+
+Thank you,  
+Avery Thompson
+
+--------------------------------------------------------------------------------------------------------------------------------------------
+- Need More Details on Installation Options
+
+Subject: Need More Details on Installation Options
+
+Body:
+Hi team,
+
+Could you provide more information about the installation services you offer for enterprise clients?  
+I’m specifically looking for support in the Midwest region.
+
+Best,  
+Jamie Alvarez
+--------------------------------------------------------------------------------------------------------------------------------------------
+- Unable to Determine Email Type
+
+Subject: Just Checking In
+
+Body:
+Hey folks,
+
+Just checking in to see if you received my last message. Looking forward to hearing from you.
+
+Best,  
+Sam

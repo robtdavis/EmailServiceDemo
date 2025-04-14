@@ -20,13 +20,19 @@ public class SalesforceRecordCreator {
         attachEmailAndFiles(c.Id, email);
     }
 
-    // To Do what if there is not record found?
     public static void createOpportunity(Messaging.InboundEmail email){
-        Contact con = [SELECT Id, AccountId FROM Contact WHERE Email = :email.fromAddress LIMIT 1];
+        Contact con = findContactByEmail(email);
+        Id newAcctId;
+
+        if (con == null) {
+            newAcctId = createAccount(email); // 👈 Method #1
+        } else {
+            newAcctId = con.AccountId;
+        }
 
         Opportunity opp = new Opportunity();
         opp.Name = 'Opportunity from Email: ' + email.subject;
-        opp.AccountId = con.AccountId;
+        opp.AccountId = newAcctId;
         opp.StageName = 'Prospecting';
         opp.CloseDate = Date.today().addDays(30);
         insert opp;
@@ -37,35 +43,25 @@ public class SalesforceRecordCreator {
     }
 
     private static void attachEmailAndFiles(Id parentId, Messaging.InboundEmail email){
-           // Determine the object type from the ID prefix
-    String sobjectType = parentId.getSObjectType().getDescribe().getName();
     
-    EmailMessage emailMsg = new EmailMessage();
-    emailMsg.FromAddress = email.fromAddress;
-    emailMsg.Incoming = true;
-    emailMsg.Subject = email.subject;
-    emailMsg.TextBody = email.plainTextBody;
+        EmailMessage emailMsg = new EmailMessage();
+        emailMsg.FromAddress = email.fromAddress;
+        emailMsg.Incoming = true;
+        emailMsg.Subject = email.subject;
+        emailMsg.TextBody = email.plainTextBody;
+        insert emailMsg;
     
-    // Handle different parent object types appropriately
-    if (sobjectType == 'Case') {
-        emailMsg.ParentId = parentId;
-    } else if (sobjectType == 'Opportunity') {
-        // For Opportunity, we need to relate via a different field or create a Task instead
-        // Option 1: Create a Task with WhatId as the Opportunity
         Task emailTask = new Task(
-            Subject = 'Email: ' + email.subject,
-            Description = email.plainTextBody,
-            WhatId = parentId,
-            Status = 'Completed',
-            Priority = 'Normal',
-            ActivityDate = Date.today()
-        );
+        Subject = 'Email: ' + email.subject,
+        Description = email.plainTextBody,
+        WhatId = parentId,
+        Status = 'Completed',
+        Priority = 'Normal',
+        ActivityDate = Date.today());
         insert emailTask;
+ 
+        saveAttachments(email, parentId);
         
-        // If you still want to store the EmailMessage, you may need to create a Case
-        // to link it to, or store it differently depending on your requirements
-        return; // Skip EmailMessage creation for Opportunity
-        }
     }
 
     private static void relateOrderIfPresent(Messaging.InboundEmail email, Opportunity opp){
@@ -78,4 +74,64 @@ public class SalesforceRecordCreator {
             update opp;
         }
     }
+
+    private static Id createAccount(Messaging.InboundEmail email) {
+        Account acct = new Account(
+            Name = 'AutoCreated - ' + email.fromName
+        );
+        insert acct;
+        return acct.Id;
+    }
+
+    private static Contact createContact(Messaging.InboundEmail email, Id accountId) {
+        Contact c = new Contact(
+            LastName = 'AutoCreated',
+            Email = email.fromAddress,
+            AccountId = accountId
+        );
+        insert c;
+        return c;
+    }
+
+    private static Contact findContactByEmail(Messaging.InboundEmail email) {
+        List<Contact> matches = [
+            SELECT Id, AccountId FROM Contact WHERE Email = :email.fromAddress LIMIT 1
+        ];
+        return matches.isEmpty() ? null : matches[0];
+    }
+
+    private static void saveAttachments(Messaging.InboundEmail email, Id parentId) {
+        if (parentId == null) {
+            return;
+        }
+        
+        if(email.binaryAttachments != null && email.binaryAttachments.size() > 0){
+            List<ContentVersion> cvList = new List<ContentVersion>();
+            for(Messaging.InboundEmail.BinaryAttachment emailAttachment : email.binaryAttachments){
+                ContentVersion cv = new ContentVersion();
+                cv.VersionData = emailAttachment.body;  // Using the actual file content
+                cv.Title = emailAttachment.fileName;    // Using the actual file name 
+                cv.PathOnClient = emailAttachment.fileName;  // Required field
+                cv.ContentLocation = 'S'; // S for Salesforce storage
+                cvList.add(cv);                
+            }
+            if(!cvList.isEmpty()){
+                insert cvList;
+                
+                // Link ContentVersion to the parent record
+                List<ContentDocumentLink> cdLinks = new List<ContentDocumentLink>();
+                for(ContentVersion cv : [SELECT ContentDocumentId FROM ContentVersion WHERE Id IN :cvList]){
+                    ContentDocumentLink cdl = new ContentDocumentLink();
+                    cdl.LinkedEntityId = parentId;
+                    cdl.ContentDocumentId = cv.ContentDocumentId;
+                    cdl.ShareType = 'V'; // V for Viewer
+                    cdLinks.add(cdl);
+                }
+                if(!cdLinks.isEmpty()){
+                    insert cdLinks;
+                }
+            }
+        } 
+    }
+
 }
